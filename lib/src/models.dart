@@ -108,39 +108,124 @@ class BankProfile {
   }
 }
 
+const List<String> defaultSelectedBankNames = [
+  'Bancolombia',
+  'Nu',
+  'Nequi',
+  'Davivienda',
+  'BBVA',
+  'Banco de Bogota',
+  'Banco Popular',
+  'Banco Caja Social',
+  'Scotiabank Colpatria',
+  'Itau',
+  'Lulo Bank',
+  'RappiPay',
+];
+
 const List<BankProfile> bankCatalog = [
   BankProfile(
     name: 'Bancolombia',
     accent: 0xFFF5B700,
-    shortcutHint: 'SMS y notificaciones de compra',
-    notificationHint: 'Atajo iOS recomendado para mensajes y push',
-    officialHint: 'Cobertura parcial en SMS; mejor combinar con Atajos',
+    shortcutHint: 'Muy util para compras del dia a dia.',
+    notificationHint:
+        'Si llega un aviso de compra, la app intenta leerlo sola.',
+    officialHint: 'Si algo no coincide, lo revisas en segundos.',
   ),
   BankProfile(
     name: 'Nu',
     accent: 0xFF6A1BFF,
-    shortcutHint: 'Notificaciones push',
-    notificationHint: 'Atajo iOS para texto de notificacion',
-    officialHint: 'Muy bueno para automatizacion con notificaciones',
+    shortcutHint: 'Ideal para seguir pagos rapidos y sin enredos.',
+    notificationHint:
+        'Si aparece un movimiento, MisFin lo puede registrar casi sola.',
+    officialHint: 'Si dudas del valor, lo corriges antes de guardar.',
   ),
   BankProfile(
     name: 'Nequi',
     accent: 0xFFEF6A00,
-    shortcutHint: 'Notificaciones push',
-    notificationHint: 'Atajo iOS para texto de notificacion',
-    officialHint: 'Ideal para un flujo semi-automatico en iPhone',
+    shortcutHint: 'Sirve mucho para gastos pequenos y de todos los dias.',
+    notificationHint:
+        'Cuando llegue una compra, la app intenta entenderla al momento.',
+    officialHint:
+        'Si el gasto fue en efectivo o no cuadra, lo dejas en manual.',
   ),
   BankProfile(
     name: 'Davivienda',
     accent: 0xFFE53935,
-    shortcutHint: 'Push y texto compartido',
-    notificationHint: 'Atajo iOS para mensajes de la app',
-    officialHint: 'Funciona bien con el flujo de compartir texto',
+    shortcutHint: 'Te ayuda a no perder compras importantes.',
+    notificationHint:
+        'Si ves el aviso en el celular, MisFin lo puede guardar rapido.',
+    officialHint: 'Si prefieres, siempre puedes revisar antes de confirmar.',
+  ),
+  BankProfile(
+    name: 'BBVA',
+    accent: 0xFF1E4ED8,
+    shortcutHint:
+        'Bueno para revisar pagos con tarjeta sin abrir mil pantallas.',
+    notificationHint:
+        'Si llega un mensaje de compra, la app intenta dejarlo listo.',
+    officialHint: 'Si algo queda raro, solo corriges una vez y sigues.',
+  ),
+  BankProfile(
+    name: 'Banco de Bogota',
+    accent: 0xFF0057B8,
+    shortcutHint: 'Sirve para seguir el ritmo de tus compras con mas orden.',
+    notificationHint: 'Si recibes un aviso, la app intenta detectarlo sola.',
+    officialHint: 'Si no esta claro, lo dejas para revisar despues.',
+  ),
+  BankProfile(
+    name: 'Banco Popular',
+    accent: 0xFFE71F3D,
+    shortcutHint: 'Practico para ver rapido en que se fue el dinero.',
+    notificationHint:
+        'Cuando llegue un movimiento, MisFin intenta leerlo de inmediato.',
+    officialHint:
+        'Si quieres ir seguro, primero miras el resumen y luego guardas.',
+  ),
+  BankProfile(
+    name: 'Banco Caja Social',
+    accent: 0xFF00A3E0,
+    shortcutHint: 'Te ayuda a ordenar compras pequenas y repetidas.',
+    notificationHint:
+        'Si entra una notificacion de gasto, la app lo intenta captar sola.',
+    officialHint: 'Si hay dudas, lo ajustas antes de dejarlo guardado.',
+  ),
+  BankProfile(
+    name: 'Scotiabank Colpatria',
+    accent: 0xFFE1251B,
+    shortcutHint: 'Buena opcion para movimientos que quieres ver sin esfuerzo.',
+    notificationHint:
+        'Si llega la alerta de compra, MisFin intenta dejarla lista.',
+    officialHint: 'Si algo no encaja, puedes corregirlo en un toque.',
+  ),
+  BankProfile(
+    name: 'Itau',
+    accent: 0xFF2B2E83,
+    shortcutHint: 'Ideal para llevar compras importantes con orden.',
+    notificationHint:
+        'Cuando llegue un aviso, la app intenta leer el monto y el banco.',
+    officialHint: 'Si hace falta, revisas antes de confirmar.',
+  ),
+  BankProfile(
+    name: 'Lulo Bank',
+    accent: 0xFF00C2A8,
+    shortcutHint: 'Muy util para registrar compras rapidas sin pensarlo mucho.',
+    notificationHint:
+        'Si la notificacion trae el valor, MisFin intenta guardarla sola.',
+    officialHint: 'Si algo no cuadra, lo cambias antes de terminar.',
+  ),
+  BankProfile(
+    name: 'RappiPay',
+    accent: 0xFFFF6F61,
+    shortcutHint: 'Excelente para seguir compras cotidianas y delivery.',
+    notificationHint:
+        'Si llega el aviso de un pago, la app intenta tomarlo al vuelo.',
+    officialHint: 'Si quieres, siempre puedes revisarlo antes de dejarlo fijo.',
   ),
 ];
 
-class PresuCoProfile {
-  const PresuCoProfile({
+class MisFinProfile {
+  const MisFinProfile({
     required this.name,
     required this.onboardingComplete,
     required this.currency,
@@ -158,15 +243,15 @@ class PresuCoProfile {
   final double monthlySavingsGoal;
   final List<String> selectedBanks;
 
-  factory PresuCoProfile.defaults() {
-    return const PresuCoProfile(
+  factory MisFinProfile.defaults() {
+    return const MisFinProfile(
       name: fixedUserName,
       onboardingComplete: false,
       currency: AppCurrency.cop,
       frequency: IncomeFrequency.monthly,
       incomePerPeriod: 0,
       monthlySavingsGoal: 0,
-      selectedBanks: ['Bancolombia', 'Nu', 'Nequi', 'Davivienda'],
+      selectedBanks: defaultSelectedBankNames,
     );
   }
 
@@ -174,7 +259,7 @@ class PresuCoProfile {
   double get monthlyBudget =>
       (monthlyIncome - monthlySavingsGoal).clamp(0, double.infinity).toDouble();
 
-  PresuCoProfile copyWith({
+  MisFinProfile copyWith({
     String? name,
     bool? onboardingComplete,
     AppCurrency? currency,
@@ -183,7 +268,7 @@ class PresuCoProfile {
     double? monthlySavingsGoal,
     List<String>? selectedBanks,
   }) {
-    return PresuCoProfile(
+    return MisFinProfile(
       name: name ?? this.name,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       currency: currency ?? this.currency,
@@ -204,18 +289,19 @@ class PresuCoProfile {
         'selectedBanks': selectedBanks,
       };
 
-  factory PresuCoProfile.fromJson(Map<String, dynamic> json) {
-    return PresuCoProfile(
+  factory MisFinProfile.fromJson(Map<String, dynamic> json) {
+    return MisFinProfile(
       name: fixedUserName,
       onboardingComplete: (json['onboardingComplete'] as bool?) ?? false,
       currency: AppCurrency.fromName((json['currency'] as String?) ?? 'cop'),
-      frequency: IncomeFrequencyX.fromName((json['frequency'] as String?) ?? 'monthly'),
+      frequency: IncomeFrequencyX.fromName(
+          (json['frequency'] as String?) ?? 'monthly'),
       incomePerPeriod: (json['incomePerPeriod'] as num?)?.toDouble() ?? 0,
       monthlySavingsGoal: (json['monthlySavingsGoal'] as num?)?.toDouble() ?? 0,
       selectedBanks: (json['selectedBanks'] as List<dynamic>?)
               ?.map((value) => value.toString())
               .toList() ??
-          const ['Bancolombia', 'Nu', 'Nequi', 'Davivienda'],
+          defaultSelectedBankNames,
     );
   }
 }
@@ -261,7 +347,8 @@ class ExpenseEntry {
       amount: (json['amount'] as num).toDouble(),
       note: json['note'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      monthKey: (json['monthKey'] as String?) ?? monthKeyOf(DateTime.parse(json['createdAt'] as String)),
+      monthKey: (json['monthKey'] as String?) ??
+          monthKeyOf(DateTime.parse(json['createdAt'] as String)),
       source: json['source'] as String,
       category: json['category'] as String,
       bank: json['bank'] as String?,
@@ -348,10 +435,11 @@ class MonthlySummary {
   factory MonthlySummary.fromExpenses({
     required String monthKey,
     required List<ExpenseEntry> expenses,
-    required PresuCoProfile profile,
+    required MisFinProfile profile,
   }) {
     final parsedDate = DateTime.parse('$monthKey-01');
-    final spent = expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
+    final spent =
+        expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
     return MonthlySummary(
       monthKey: monthKey,
       name: monthLabelOf(monthKey),
@@ -389,7 +477,7 @@ class ParsedTransactionDraft {
   final String hint;
   final int confidence;
 
-  bool get canAutoImport => amount != null && confidence >= 65;
+  bool get canAutoImport => amount != null && confidence >= 75;
   bool hasCurrencyMismatch(AppCurrency activeCurrency) =>
       detectedCurrency != null && detectedCurrency != activeCurrency;
   String get confidenceLabel => confidence >= 80

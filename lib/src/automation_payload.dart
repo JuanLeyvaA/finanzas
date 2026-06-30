@@ -1,5 +1,12 @@
 String? extractAutomationText(Uri uri) {
-  for (final key in const ['text', 'payload', 'message', 'raw']) {
+  for (final key in const [
+    'text',
+    'payload',
+    'message',
+    'raw',
+    'clipboard',
+    'content'
+  ]) {
     final value = uri.queryParameters[key]?.trim();
     if (value != null && value.isNotEmpty) {
       return value;
@@ -9,11 +16,13 @@ String? extractAutomationText(Uri uri) {
 }
 
 Uri buildAutomationUri({
-  required Uri baseUri,
   required String text,
 }) {
-  return baseUri.replace(queryParameters: <String, String>{
-    ...baseUri.queryParameters,
-    'text': text,
-  });
+  return Uri(
+    scheme: 'misfin',
+    host: 'import',
+    queryParameters: <String, String>{
+      'text': text,
+    },
+  );
 }

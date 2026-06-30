@@ -70,7 +70,9 @@ class MetricCard extends StatelessWidget {
         children: [
           Text(title, style: TextStyle(color: Colors.grey.shade700)),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          Text(value,
+              style:
+                  const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           Text(subtitle, style: TextStyle(color: Colors.grey.shade700)),
         ],
@@ -145,10 +147,13 @@ class AnimalSectionBanner extends StatelessWidget {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         final compact = width < 430;
-        final textPanelWidth = compact ? math.min(width * 0.5, 220.0) : math.min(width * 0.36, 210.0);
+        final textPanelWidth = compact
+            ? math.min(width * 0.58, 218.0)
+            : math.min(width * 0.36, 220.0);
         return Container(
-          height: compact ? 272 : 242,
+          height: compact ? 308 : 254,
           padding: const EdgeInsets.all(20),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: LinearGradient(
@@ -173,18 +178,21 @@ class AnimalSectionBanner extends StatelessWidget {
               Positioned(
                 top: -18,
                 right: 12,
-                child: _GlowOrb(color: Colors.white.withOpacity(0.16), size: 120),
+                child:
+                    _GlowOrb(color: Colors.white.withOpacity(0.16), size: 120),
               ),
               Positioned(
                 left: -12,
                 bottom: -28,
-                child: _GlowOrb(color: Colors.white.withOpacity(0.12), size: 110),
+                child:
+                    _GlowOrb(color: Colors.white.withOpacity(0.12), size: 110),
               ),
               Positioned.fill(
-                left: textPanelWidth + 14,
                 child: _AnimalTrail(
                   animals: animals,
                   palette: palette,
+                  reservedTextWidth: textPanelWidth,
+                  compactBanner: compact,
                 ),
               ),
               SizedBox(
@@ -195,15 +203,19 @@ class AnimalSectionBanner extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: Colors.white.withOpacity(0.26)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.26)),
                           ),
                           child: Text(
                             currency.shortLabel,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800),
                           ),
                         ),
                       ],
@@ -244,7 +256,7 @@ class AnimatedAnimalSticker extends StatefulWidget {
     super.key,
     required this.emoji,
     this.delayMs = 0,
-    this.size = 58,
+    this.size = 64,
     this.framed = true,
     this.backgroundColor,
     this.highlightColor,
@@ -261,7 +273,8 @@ class AnimatedAnimalSticker extends StatefulWidget {
   State<AnimatedAnimalSticker> createState() => _AnimatedAnimalStickerState();
 }
 
-class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker> with SingleTickerProviderStateMixin {
+class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -289,8 +302,10 @@ class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker> with Sing
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = widget.backgroundColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.18);
-    final highlightColor = widget.highlightColor ?? Colors.white.withOpacity(0.92);
+    final baseColor = widget.backgroundColor ??
+        Theme.of(context).colorScheme.primary.withOpacity(0.18);
+    final highlightColor =
+        widget.highlightColor ?? Colors.white.withOpacity(0.92);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -313,7 +328,8 @@ class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker> with Sing
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(widget.size * 0.3),
-                border: Border.all(color: Colors.white.withOpacity(0.82), width: 1.4),
+                border: Border.all(
+                    color: Colors.white.withOpacity(0.82), width: 1.4),
                 boxShadow: [
                   BoxShadow(
                     color: baseColor.withOpacity(0.34),
@@ -339,7 +355,7 @@ class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker> with Sing
                   Center(
                     child: Text(
                       widget.emoji,
-                      style: TextStyle(fontSize: widget.size * 0.52),
+                      style: TextStyle(fontSize: widget.size * 0.58),
                     ),
                   ),
                 ],
@@ -367,7 +383,7 @@ class _AnimatedAnimalStickerState extends State<AnimatedAnimalSticker> with Sing
                   Text(
                     widget.emoji,
                     style: TextStyle(
-                      fontSize: widget.size * 0.72,
+                      fontSize: widget.size * 0.78,
                       shadows: [
                         Shadow(
                           color: Colors.black.withOpacity(0.12),
@@ -399,7 +415,7 @@ class AnimatedEmojiBadge extends StatelessWidget {
     return AnimatedAnimalSticker(
       emoji: emoji,
       delayMs: delayMs,
-      size: 56,
+      size: 62,
       backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
       highlightColor: Colors.white.withOpacity(0.88),
     );
@@ -410,10 +426,14 @@ class _AnimalTrail extends StatelessWidget {
   const _AnimalTrail({
     required this.animals,
     required this.palette,
+    required this.reservedTextWidth,
+    required this.compactBanner,
   });
 
   final List<String> animals;
   final CurrencyPalette palette;
+  final double reservedTextWidth;
+  final bool compactBanner;
 
   @override
   Widget build(BuildContext context) {
@@ -428,36 +448,40 @@ class _AnimalTrail extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final compact = width < 190;
+        final rightStart = math.min(width - 66, reservedTextWidth + 12);
+        final rightWidth = math.max(66.0, width - rightStart);
         final points = <({double centerX, double top, double size})>[
-          if (compact) ...[
-            (centerX: width * 0.10, top: 24, size: 30),
-            (centerX: width * 0.27, top: 108, size: 34),
-            (centerX: width * 0.45, top: 30, size: 40),
-            (centerX: width * 0.64, top: 110, size: 36),
-            (centerX: width * 0.83, top: 28, size: 44),
+          if (compactBanner) ...[
+            (centerX: rightStart + rightWidth * 0.32, top: 10, size: 62),
+            (centerX: rightStart + rightWidth * 0.74, top: 84, size: 68),
+            (centerX: rightStart + rightWidth * 0.30, top: 154, size: 56),
+            (centerX: width * 0.10, top: 212, size: 46),
+            (centerX: width * 0.34, top: 204, size: 54),
+            (centerX: width * 0.61, top: 210, size: 50),
+            (centerX: width * 0.87, top: 202, size: 58),
           ] else ...[
-            (centerX: width * 0.08, top: 28, size: 40),
-            (centerX: width * 0.18, top: 96, size: 48),
-            (centerX: width * 0.31, top: 34, size: 58),
-            (centerX: width * 0.44, top: 104, size: 54),
-            (centerX: width * 0.57, top: 22, size: 66),
-            (centerX: width * 0.70, top: 98, size: 50),
-            (centerX: width * 0.80, top: 30, size: 58),
-            (centerX: width * 0.90, top: 100, size: 54),
+            (centerX: rightStart + rightWidth * 0.08, top: 24, size: 48),
+            (centerX: rightStart + rightWidth * 0.20, top: 104, size: 56),
+            (centerX: rightStart + rightWidth * 0.34, top: 28, size: 66),
+            (centerX: rightStart + rightWidth * 0.48, top: 112, size: 62),
+            (centerX: rightStart + rightWidth * 0.61, top: 16, size: 74),
+            (centerX: rightStart + rightWidth * 0.74, top: 104, size: 58),
+            (centerX: rightStart + rightWidth * 0.86, top: 26, size: 66),
+            (centerX: rightStart + rightWidth * 0.96, top: 106, size: 62),
           ],
         ];
 
         return Stack(
           clipBehavior: Clip.none,
           children: [
-            if (!compact)
+            if (!compactBanner)
               Positioned(
                 top: 28,
                 left: width * 0.34,
-                child: _GlowOrb(color: Colors.white.withOpacity(0.12), size: 120),
+                child:
+                    _GlowOrb(color: Colors.white.withOpacity(0.12), size: 120),
               ),
-            if (!compact)
+            if (!compactBanner)
               Positioned(
                 top: 102,
                 left: width * 0.76,
@@ -465,7 +489,8 @@ class _AnimalTrail extends StatelessWidget {
               ),
             for (var i = 0; i < points.length; i++)
               Positioned(
-                left: _clampAnimalLeft(points[i].centerX, points[i].size, width),
+                left:
+                    _clampAnimalLeft(points[i].centerX, points[i].size, width),
                 top: points[i].top,
                 child: AnimatedAnimalSticker(
                   emoji: visibleAnimals[i % visibleAnimals.length],
@@ -541,7 +566,8 @@ class SavingsIllustration extends StatelessWidget {
           Positioned(
             right: 20,
             top: 20,
-            child: Icon(Icons.auto_awesome, color: Colors.white.withOpacity(0.95), size: 30),
+            child: Icon(Icons.auto_awesome,
+                color: Colors.white.withOpacity(0.95), size: 30),
           ),
           Positioned(
             left: 18,
@@ -555,7 +581,8 @@ class SavingsIllustration extends StatelessWidget {
               ),
               child: const Text(
                 'Ahorra con estilo',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -626,7 +653,8 @@ class BobbingCoin extends StatefulWidget {
   State<BobbingCoin> createState() => _BobbingCoinState();
 }
 
-class _BobbingCoinState extends State<BobbingCoin> with SingleTickerProviderStateMixin {
+class _BobbingCoinState extends State<BobbingCoin>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -807,7 +835,8 @@ class _PhoneFrame extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.w800)),
                   const Spacer(),
                   const Icon(Icons.battery_full, size: 16),
                 ],
@@ -857,7 +886,8 @@ class _PreviewDashboardMock extends StatelessWidget {
           const SizedBox(height: 10),
           const _MiniCard(title: 'Restante', value: '\$325.000'),
           const SizedBox(height: 14),
-          const Text('Ultimos gastos', style: TextStyle(fontWeight: FontWeight.w800)),
+          const Text('Ultimos gastos',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
           const _MiniTile(title: 'Mercado', subtitle: 'Compra con tarjeta'),
           const _MiniTile(title: 'Cafe', subtitle: 'Efectivo'),
@@ -878,17 +908,18 @@ class _PreviewImportMock extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Pegar texto', style: TextStyle(fontWeight: FontWeight.w800)),
+          const Text('Pegar texto',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
           Container(
             height: 160,
             padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF6F0E3),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE0D2BC)),
-          ),
-          child: const Text(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6F0E3),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE0D2BC)),
+            ),
+            child: const Text(
               'Bancolombia aprobó compra por \$45.000 en MERCADO MAYORISTA.',
               style: TextStyle(height: 1.4),
             ),
@@ -973,13 +1004,15 @@ class _MiniTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const CircleAvatar(radius: 18, child: Icon(Icons.receipt_long, size: 16)),
+            const CircleAvatar(
+                radius: 18, child: Icon(Icons.receipt_long, size: 16)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.w800)),
                   Text(subtitle),
                 ],
               ),
@@ -1012,7 +1045,8 @@ class _MiniBankCard extends StatelessWidget {
           CircleAvatar(child: Text(name.isNotEmpty ? name[0] : '?')),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(name, style: const TextStyle(fontWeight: FontWeight.w800)),
+            child:
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w800)),
           ),
           Switch(value: active, onChanged: null),
         ],

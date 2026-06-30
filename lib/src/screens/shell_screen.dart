@@ -10,7 +10,7 @@ import 'settings_screen.dart';
 class ShellScreen extends StatefulWidget {
   const ShellScreen({super.key, required this.controller, this.initialIndex = 0});
 
-  final PresuCoController controller;
+  final MisFinController controller;
   final int initialIndex;
 
   @override

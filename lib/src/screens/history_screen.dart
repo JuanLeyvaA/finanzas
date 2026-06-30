@@ -11,7 +11,7 @@ import '../widgets.dart';
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();

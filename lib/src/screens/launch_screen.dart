@@ -9,7 +9,7 @@ import '../widgets.dart';
 class LaunchScreen extends StatelessWidget {
   const LaunchScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,12 @@ class LaunchScreen extends StatelessWidget {
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF08050D), Color(0xFF2A103F), Color(0xFF5C197B), Color(0xFF09060E)],
+              colors: [
+                Color(0xFF08050D),
+                Color(0xFF2A103F),
+                Color(0xFF5C197B),
+                Color(0xFF09060E)
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -48,17 +53,23 @@ class LaunchScreen extends StatelessWidget {
               Positioned(
                 top: -32,
                 right: -20,
-                child: _GlowBlob(color: const Color(0xFFFFC857).withOpacity(0.35), size: 190),
+                child: _GlowBlob(
+                    color: const Color(0xFFFFC857).withOpacity(0.35),
+                    size: 190),
               ),
               Positioned(
                 top: 120,
                 left: -48,
-                child: _GlowBlob(color: const Color(0xFF7EE2B8).withOpacity(0.24), size: 240),
+                child: _GlowBlob(
+                    color: const Color(0xFF7EE2B8).withOpacity(0.24),
+                    size: 240),
               ),
               Positioned(
                 bottom: 80,
                 right: -40,
-                child: _GlowBlob(color: const Color(0xFFB3A6FF).withOpacity(0.22), size: 220),
+                child: _GlowBlob(
+                    color: const Color(0xFFB3A6FF).withOpacity(0.22),
+                    size: 220),
               ),
               SafeArea(
                 child: Padding(
@@ -74,11 +85,15 @@ class LaunchScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF1F8F6A), Color(0xFFFFA726)],
+                                  colors: [
+                                    Color(0xFF1F8F6A),
+                                    Color(0xFFFFA726)
+                                  ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF1F8F6A).withOpacity(0.18),
+                                    color: const Color(0xFF1F8F6A)
+                                        .withOpacity(0.18),
                                     blurRadius: 18,
                                     offset: const Offset(0, 10),
                                   ),
@@ -87,7 +102,10 @@ class LaunchScreen extends StatelessWidget {
                               child: const Center(
                                 child: Text(
                                   'P',
-                                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900),
                                 ),
                               ),
                             ),
@@ -97,8 +115,11 @@ class LaunchScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'PresuCo',
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    'MisFin',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
@@ -113,15 +134,19 @@ class LaunchScreen extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.18),
                                 borderRadius: BorderRadius.circular(999),
-                                border: Border.all(color: Colors.white.withOpacity(0.28)),
+                                border: Border.all(
+                                    color: Colors.white.withOpacity(0.28)),
                               ),
                               child: const Text(
                                 'Toca para seguir',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700),
                               ),
                             ),
                           ],
@@ -139,25 +164,28 @@ class LaunchScreen extends StatelessWidget {
                                   child: Text(
                                     'Bienvenida, $fixedUserName',
                                     textAlign: TextAlign.center,
-                                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                          fontSize: 42,
-                                          height: 1.02,
-                                          color: Colors.white,
-                                          shadows: const [
-                                            Shadow(
-                                              color: Color(0x55000000),
-                                              blurRadius: 18,
-                                              offset: Offset(0, 6),
-                                            ),
-                                          ],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                      fontSize: 42,
+                                      height: 1.02,
+                                      color: Colors.white,
+                                      shadows: const [
+                                        Shadow(
+                                          color: Color(0x55000000),
+                                          blurRadius: 18,
+                                          offset: Offset(0, 6),
                                         ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 10),
                                 FadeSlideIn(
                                   delay: const Duration(milliseconds: 120),
                                   child: Text(
-                                    'Una app colorida, suave y pensada para automatizar el registro de gastos con el minimo esfuerzo.',
+                                    'Una app bonita y pensada para ti para automatizar el registro de gastos con el minimo esfuerzo.',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -175,7 +203,8 @@ class LaunchScreen extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.68),
                                       borderRadius: BorderRadius.circular(38),
-                                      border: Border.all(color: const Color(0x22FFFFFF)),
+                                      border: Border.all(
+                                          color: const Color(0x22FFFFFF)),
                                       boxShadow: const [
                                         BoxShadow(
                                           color: Color(0x14000000),
@@ -196,20 +225,25 @@ class LaunchScreen extends StatelessWidget {
                         delay: const Duration(milliseconds: 260),
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colors.white.withOpacity(0.26)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.26)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.touch_app_rounded, color: Colors.white),
+                              const Icon(Icons.touch_app_rounded,
+                                  color: Colors.white),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   'Toca en cualquier parte para entrar a la configuracion',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700),
                                 ),
                               ),
                             ],
@@ -283,7 +317,8 @@ class AnimatedAnimalTile extends StatefulWidget {
   State<AnimatedAnimalTile> createState() => _AnimatedAnimalTileState();
 }
 
-class _AnimatedAnimalTileState extends State<AnimatedAnimalTile> with SingleTickerProviderStateMixin {
+class _AnimatedAnimalTileState extends State<AnimatedAnimalTile>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -352,7 +387,7 @@ class _AnimatedAnimalTileState extends State<AnimatedAnimalTile> with SingleTick
             Center(
               child: Text(
                 widget.emoji,
-                style: const TextStyle(fontSize: 48),
+                style: const TextStyle(fontSize: 54),
               ),
             ),
           ],

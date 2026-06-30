@@ -11,7 +11,7 @@ import '../widgets.dart';
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +135,7 @@ class DashboardScreen extends StatelessWidget {
 class _HeroCard extends StatelessWidget {
   const _HeroCard({required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {

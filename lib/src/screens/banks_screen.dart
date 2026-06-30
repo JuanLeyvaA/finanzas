@@ -7,7 +7,7 @@ import '../widgets.dart';
 class BanksScreen extends StatelessWidget {
   const BanksScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +27,13 @@ class BanksScreen extends StatelessWidget {
         const SizedBox(height: 14),
         ...bankCatalog.map(
           (bank) {
-            final selected = controller.profile.selectedBanks.contains(bank.name);
-            final tips = _bankTips(bank);
+            final selected =
+                controller.profile.selectedBanks.contains(bank.name);
+            final tips = [
+              bank.shortcutHint,
+              bank.notificationHint,
+              bank.officialHint,
+            ];
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: FadeSlideIn(
@@ -39,16 +44,23 @@ class BanksScreen extends StatelessWidget {
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: Color(bank.accent).withOpacity(0.16),
-                            child: Text(bank.name.isNotEmpty ? bank.name[0] : '?'),
+                            backgroundColor:
+                                Color(bank.accent).withOpacity(0.16),
+                            child:
+                                Text(bank.name.isNotEmpty ? bank.name[0] : '?'),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(bank.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                                Text(selected ? 'Recomendaciones para llevar mejor la cuenta' : 'Activalo para ver sugerencias utiles'),
+                                Text(bank.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16)),
+                                Text(selected
+                                    ? 'Ideas simples para usarlo mejor'
+                                    : 'Activalo para ver ideas utiles'),
                               ],
                             ),
                           ),
@@ -74,41 +86,6 @@ class BanksScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-List<String> _bankTips(BankProfile bank) {
-  switch (bank.name) {
-    case 'Bancolombia':
-      return const [
-        'Revisa seguido tus mensajes y compras para que ningun gasto se te pase por alto.',
-        'Si pagas mucho con este banco, intenta registrar cada compra el mismo dia para llevar un mejor orden.',
-        'Te conviene comparar lo que gastas aqui con tu presupuesto varias veces por semana.',
-      ];
-    case 'Nu':
-      return const [
-        'Como suele mostrar compras rapido, te sirve revisar tus movimientos con frecuencia.',
-        'Es buena idea anotar enseguida los pagos pequenos para que el total del mes no te sorprenda.',
-        'Si usas mucho esta tarjeta, mirarla cada noche puede ayudarte a cerrar el dia con claridad.',
-      ];
-    case 'Nequi':
-      return const [
-        'Como suele usarse para gastos del dia a dia, intenta registrar compras pequenas y transferencias al momento.',
-        'Te ayuda bastante separar mentalmente lo que fue antojo, transporte o compras necesarias.',
-        'Mirar este banco seguido evita que los gastos rapidos se te acumulen sin notarlo.',
-      ];
-    case 'Davivienda':
-      return const [
-        'Si usas este banco para pagos importantes, revisa cada movimiento con calma antes de cerrar el dia.',
-        'Te puede servir mucho registrar apenas hagas una compra para no depender de la memoria.',
-        'Comparar lo gastado aqui con tu meta de ahorro te ayuda a mantener el rumbo del mes.',
-      ];
-    default:
-      return [
-        'Revisa los movimientos de ${bank.name} con frecuencia para llevar una cuenta clara.',
-        'Registrar cada gasto cerca del momento de la compra te ayuda a no olvidar nada.',
-        'Mirar este banco junto a tu meta de ahorro puede darte una mejor idea de como vas.',
-      ];
   }
 }
 

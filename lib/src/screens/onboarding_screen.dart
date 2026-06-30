@@ -9,7 +9,7 @@ import '../widgets.dart';
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -32,7 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ? ''
         : widget.controller.profile.monthlySavingsGoal.round().toString();
     _selectedBanks = widget.controller.profile.selectedBanks.isEmpty
-        ? {'Bancolombia', 'Nu', 'Nequi', 'Davivienda'}
+        ? defaultSelectedBankNames.toSet()
         : widget.controller.profile.selectedBanks.toSet();
     _frequency = widget.controller.profile.frequency;
   }
@@ -88,7 +88,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF09050E), Color(0xFF2A103F), Color(0xFF5F1A7A), Color(0xFF0A0910)],
+            colors: [
+              Color(0xFF09050E),
+              Color(0xFF2A103F),
+              Color(0xFF5F1A7A),
+              Color(0xFF0A0910)
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -123,11 +128,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           return SingleChildScrollView(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: ConstrainedBox(
-                              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                              constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight),
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 320),
                                 switchInCurve: Curves.easeOutCubic,
                                 switchOutCurve: Curves.easeInCubic,
+                                layoutBuilder:
+                                    (currentChild, previousChildren) {
+                                  return currentChild ??
+                                      const SizedBox.shrink();
+                                },
                                 transitionBuilder: (child, animation) {
                                   final slide = Tween<Offset>(
                                     begin: const Offset(0.04, 0.02),
@@ -135,7 +146,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   ).animate(animation);
                                   return FadeTransition(
                                     opacity: animation,
-                                    child: SlideTransition(position: slide, child: child),
+                                    child: SlideTransition(
+                                        position: slide, child: child),
                                   );
                                 },
                                 child: KeyedSubtree(
@@ -158,20 +170,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             onPressed: () => _goTo(_index - 1),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              side: BorderSide(color: Colors.white.withOpacity(0.7)),
+                              side: BorderSide(
+                                  color: Colors.white.withOpacity(0.7)),
                             ),
                             child: const Text('Atras'),
                           ),
                         const Spacer(),
                         FilledButton(
                           onPressed: _canAdvance
-                              ? (_index < steps.length - 1 ? () => _goTo(_index + 1) : _finish)
+                              ? (_index < steps.length - 1
+                                  ? () => _goTo(_index + 1)
+                                  : _finish)
                               : null,
                           style: FilledButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF7B42D8),
                           ),
-                          child: Text(_index < steps.length - 1 ? 'Continuar' : 'Entrar'),
+                          child: Text(_index < steps.length - 1
+                              ? 'Continuar'
+                              : 'Entrar'),
                         ),
                       ],
                     ),
@@ -190,8 +207,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
-    final income = double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0;
-    final savings = double.tryParse(_savingsController.text.replaceAll(',', '')) ?? 0;
+    final income =
+        double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0;
+    final savings =
+        double.tryParse(_savingsController.text.replaceAll(',', '')) ?? 0;
     await widget.controller.completeOnboarding(
       name: fixedUserName,
       frequency: _frequency,
@@ -201,11 +220,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  double get _incomePerPeriod => double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0;
+  double get _incomePerPeriod =>
+      double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0;
   double get _monthlyIncome => _incomePerPeriod * _frequency.monthlyMultiplier;
-  double get _monthlySavingsGoal => double.tryParse(_savingsController.text.replaceAll(',', '')) ?? 0;
-  double get _monthlyBudget =>
-      (_monthlyIncome - _monthlySavingsGoal).clamp(0, double.infinity).toDouble();
+  double get _monthlySavingsGoal =>
+      double.tryParse(_savingsController.text.replaceAll(',', '')) ?? 0;
+  double get _monthlyBudget => (_monthlyIncome - _monthlySavingsGoal)
+      .clamp(0, double.infinity)
+      .toDouble();
   bool get _hasImpossibleSavingsGoal =>
       _monthlyIncome > 0 && _monthlySavingsGoal > _monthlyIncome;
   bool get _canAdvance => _index == 1 ? !_hasImpossibleSavingsGoal : true;
@@ -261,7 +283,7 @@ class _OnboardingHeader extends StatelessWidget {
               SizedBox(width: compact ? 8 : 12),
               AnimatedAnimalSticker(
                 emoji: '🦉',
-                size: compact ? 40 : 46,
+                size: compact ? 48 : 54,
                 backgroundColor: const Color(0x66FFFFFF),
               ),
               SizedBox(width: compact ? 8 : 12),
@@ -273,7 +295,8 @@ class _OnboardingHeader extends StatelessWidget {
                     value: (index + 1) / total,
                     minHeight: compact ? 8 : 10,
                     backgroundColor: Colors.white.withOpacity(0.22),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
               ),
@@ -303,7 +326,8 @@ class _WelcomeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Hola, Cindy', style: Theme.of(context).textTheme.headlineMedium),
+          Text('Hola, Cindy',
+              style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 10),
           Text(
             'Vamos a dejar tu espacio bonito, simple y listo para acompañarte cada vez que registres un gasto.',
@@ -505,7 +529,7 @@ class _BanksStep extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Selecciona los bancos que quieres automatizar primero. iPhone funciona mejor con Atajos, pegue de texto y confirmaciones rapidas.',
+            'Selecciona los bancos que mas usas para dejar la app lista. MisFin intentara leer tus gastos sola y solo te pedira ayuda si hay dudas.',
             style: TextStyle(color: Colors.grey.shade800),
           ),
           const SizedBox(height: 16),
@@ -562,117 +586,171 @@ class _AutomationStep extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 12),
-          Container(
-            height: 194,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFB0DE), Color(0xFFC19CFF), Color(0xFF8DDFFF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 18,
-                  top: 18,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(999),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 360;
+              return Container(
+                height: compact ? 278 : 194,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFFFB0DE),
+                      Color(0xFFC19CFF),
+                      Color(0xFF8DDFFF)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 18,
+                      top: 18,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: const Text(
+                              'Tu equipo ya te anima',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: compact ? constraints.maxWidth - 36 : 180,
+                            child: Text(
+                              'Tus animalitos estaran contigo para animarte a ahorrar con calma y constancia.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: compact ? 16 : 18,
+                                fontWeight: FontWeight.w800,
+                                height: 1.25,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (compact)
+                      const Positioned(
+                        left: 10,
+                        right: 10,
+                        bottom: 10,
+                        height: 68,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            AnimatedAnimalSticker(
+                              emoji: '🐤',
+                              size: 38,
+                              framed: false,
+                            ),
+                            AnimatedAnimalSticker(
+                              emoji: '🐢',
+                              size: 40,
+                              framed: false,
+                            ),
+                            AnimatedAnimalSticker(
+                              emoji: '🦊',
+                              size: 42,
+                              framed: false,
+                            ),
+                            AnimatedAnimalSticker(
+                              emoji: '🐰',
+                              size: 44,
+                              framed: false,
+                            ),
+                            AnimatedAnimalSticker(
+                              emoji: '🐼',
+                              size: 48,
+                              framed: false,
+                            ),
+                            AnimatedAnimalSticker(
+                              emoji: '🐱',
+                              size: 54,
+                              framed: false,
+                            ),
+                          ],
                         ),
-                        child: const Text(
-                          'Tu equipo ya te anima',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                      )
+                    else ...[
+                      const Positioned(
+                        top: 18,
+                        right: 18,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🐱',
+                          size: 84,
+                          framed: false,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      const SizedBox(
-                        width: 180,
-                        child: Text(
-                          'Tus animalitos estaran contigo para animarte a ahorrar con calma y constancia.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            height: 1.25,
-                          ),
+                      const Positioned(
+                        top: 18,
+                        right: 92,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🐰',
+                          size: 60,
+                          framed: false,
+                        ),
+                      ),
+                      const Positioned(
+                        top: 86,
+                        right: 114,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🦊',
+                          size: 58,
+                          framed: false,
+                        ),
+                      ),
+                      const Positioned(
+                        bottom: 18,
+                        right: 22,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🐼',
+                          size: 72,
+                          framed: false,
+                        ),
+                      ),
+                      const Positioned(
+                        bottom: 16,
+                        right: 104,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🐢',
+                          size: 56,
+                          framed: false,
+                        ),
+                      ),
+                      const Positioned(
+                        bottom: 18,
+                        right: 154,
+                        child: AnimatedAnimalSticker(
+                          emoji: '🐤',
+                          size: 48,
+                          framed: false,
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
-                const Positioned(
-                  top: 18,
-                  right: 18,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🐱',
-                    size: 84,
-                    framed: false,
-                    backgroundColor: Color(0x66FFFFFF),
-                  ),
-                ),
-                const Positioned(
-                  top: 18,
-                  right: 92,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🐰',
-                    size: 60,
-                    framed: false,
-                    backgroundColor: Color(0x55FFF3A8),
-                  ),
-                ),
-                const Positioned(
-                  top: 86,
-                  right: 114,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🦊',
-                    size: 58,
-                    framed: false,
-                    backgroundColor: Color(0x55FFFFFF),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 18,
-                  right: 22,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🐼',
-                    size: 72,
-                    framed: false,
-                    backgroundColor: Color(0x55FFFFFF),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 16,
-                  right: 104,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🐢',
-                    size: 56,
-                    framed: false,
-                    backgroundColor: Color(0x55FFFFFF),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 18,
-                  right: 154,
-                  child: AnimatedAnimalSticker(
-                    emoji: '🐤',
-                    size: 48,
-                    framed: false,
-                    backgroundColor: Color(0x66FFF6A9),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
           const SizedBox(height: 18),
           _SummaryRow(label: 'Ingreso mensual', value: _money(monthlyIncome)),
-          _SummaryRow(label: 'Ahorro mensual', value: _money(monthlySavingsGoal)),
+          _SummaryRow(
+              label: 'Ahorro mensual', value: _money(monthlySavingsGoal)),
           _SummaryRow(label: 'Presupuesto', value: _money(monthlyBudget)),
           _SummaryRow(label: 'Bancos', value: selectedBanks.join(', ')),
           const SizedBox(height: 18),
@@ -699,8 +777,9 @@ class _OwlGuideIllustration extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 390;
         return Container(
-          height: compact ? 286 : 236,
+          height: compact ? 280 : 236,
           padding: const EdgeInsets.all(18),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: const LinearGradient(
@@ -715,69 +794,70 @@ class _OwlGuideIllustration extends StatelessWidget {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.22),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'Guia inicial',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
-              if (compact)
-                ...[
-                  const Positioned(
-                    left: 14,
-                    top: 72,
-                    child: AnimatedAnimalSticker(
-                      emoji: '🦉',
-                      size: 78,
-                      framed: false,
-                      backgroundColor: Color(0x55FFFFFF),
+              if (compact) ...[
+                const Positioned(
+                  left: 4,
+                  top: 112,
+                  child: AnimatedAnimalSticker(
+                    emoji: '🦉',
+                    size: 86,
+                    framed: false,
+                    backgroundColor: Color(0x55FFFFFF),
+                  ),
+                ),
+                Positioned(
+                  left: 88,
+                  right: 0,
+                  top: 56,
+                  bottom: 14,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.82),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Te acompaño paso a paso',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w900),
+                        ),
+                        SizedBox(height: 8),
+                        Text('Elegimos tu divisa'),
+                        SizedBox(height: 6),
+                        Text('Calculamos tu ingreso mensual'),
+                        SizedBox(height: 6),
+                        Text('Y dejamos listo tu plan de ahorro'),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    left: 16,
-                    right: 12,
-                    top: 138,
-                    bottom: 14,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.82),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Te acompaño paso a paso',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-                          ),
-                          SizedBox(height: 8),
-                          Text('Elegimos tu divisa'),
-                          SizedBox(height: 6),
-                          Text('Calculamos tu ingreso mensual'),
-                          SizedBox(height: 6),
-                          Text('Y dejamos listo tu plan de ahorro'),
-                        ],
-                      ),
-                    ),
+                ),
+                const Positioned(
+                  top: 60,
+                  left: 26,
+                  child: AnimatedAnimalSticker(
+                    emoji: '🐰',
+                    size: 44,
+                    framed: false,
+                    backgroundColor: Color(0x66FFFFFF),
                   ),
-                  const Positioned(
-                    top: 82,
-                    right: 18,
-                    child: AnimatedAnimalSticker(
-                      emoji: '🐰',
-                      size: 40,
-                      framed: false,
-                      backgroundColor: Color(0x66FFFFFF),
-                    ),
-                  ),
-                ]
-              else ...[
+                ),
+              ] else ...[
                 const Positioned(
                   left: 4,
                   bottom: 8,
@@ -803,7 +883,8 @@ class _OwlGuideIllustration extends StatelessWidget {
                       children: [
                         Text(
                           'Te acompaño paso a paso',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w900),
                         ),
                         SizedBox(height: 8),
                         Text('Elegimos tu divisa'),
