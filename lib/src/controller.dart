@@ -8,8 +8,8 @@ import 'models.dart';
 import 'parser.dart';
 import 'storage.dart';
 
-class PresuCoController extends ChangeNotifier {
-  PresuCoController(this._store);
+class MisFinController extends ChangeNotifier {
+  MisFinController(this._store);
 
   static const List<String> _dailyMotivations = [
     'Un paso suave hoy tambien cuenta.',
@@ -34,11 +34,11 @@ class PresuCoController extends ChangeNotifier {
     'Vas creando un futuro mas tranquilo para ti.',
   ];
 
-  final PresuCoStore _store;
-  final PresuCoParser _parser = const PresuCoParser();
+  final MisFinStore _store;
+  final MisFinParser _parser = const MisFinParser();
   final Random _random = Random();
 
-  PresuCoProfile profile = PresuCoProfile.defaults();
+  MisFinProfile profile = MisFinProfile.defaults();
   List<ExpenseEntry> expenses = <ExpenseEntry>[];
   List<MonthlySummary> history = <MonthlySummary>[];
   ParsedTransactionDraft? draft;
@@ -68,7 +68,7 @@ class PresuCoController extends ChangeNotifier {
     required double monthlySavingsGoal,
     required List<String> selectedBanks,
   }) async {
-    profile = PresuCoProfile(
+    profile = MisFinProfile(
       name: fixedUserName,
       onboardingComplete: true,
       currency: profile.currency,
@@ -186,6 +186,15 @@ class PresuCoController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool hasExpenseWithRawText(String rawText) {
+    final normalized = rawText.trim();
+    if (normalized.isEmpty) {
+      return false;
+    }
+
+    return expenses.any((expense) => expense.rawText?.trim() == normalized);
+  }
+
   void parseText(String text) {
     draft = _parser.parse(text);
     notifyListeners();
@@ -198,6 +207,10 @@ class PresuCoController extends ChangeNotifier {
     if (autoImport &&
         draft?.canAutoImport == true &&
         !(draft?.hasCurrencyMismatch(profile.currency) ?? false)) {
+      if (hasExpenseWithRawText(text)) {
+        clearDraft();
+        return true;
+      }
       await importDraft();
       return true;
     }
@@ -216,6 +229,11 @@ class PresuCoController extends ChangeNotifier {
       return;
     }
 
+    if (hasExpenseWithRawText(currentDraft.rawText)) {
+      clearDraft();
+      return;
+    }
+
     await addManualExpense(
       amount: currentDraft.amount!,
       note: currentDraft.note,
@@ -229,7 +247,7 @@ class PresuCoController extends ChangeNotifier {
 
   Future<void> resetAll() async {
     await _store.clear();
-    profile = PresuCoProfile.defaults();
+    profile = MisFinProfile.defaults();
     expenses = <ExpenseEntry>[];
     history = <MonthlySummary>[];
     draft = null;
@@ -243,36 +261,52 @@ class PresuCoController extends ChangeNotifier {
   String get currentMonthLabel => monthLabelOf(currentMonthKey);
   List<ExpenseEntry> get currentMonthExpenses =>
       expenses.where((expense) => expense.monthKey == currentMonthKey).toList();
-  double get spentThisMonth => currentMonthExpenses.fold<double>(0, (sum, item) => sum + item.amount);
+  double get spentThisMonth =>
+      currentMonthExpenses.fold<double>(0, (sum, item) => sum + item.amount);
   double get remainingBudget => monthlyBudget - spentThisMonth;
-  double get progress =>
-      monthlyBudget == 0 ? 0 : (spentThisMonth / monthlyBudget).clamp(0.0, 1.25).toDouble();
+  double get progress => monthlyBudget == 0
+      ? 0
+      : (spentThisMonth / monthlyBudget).clamp(0.0, 1.25).toDouble();
   MonthlySummary get currentMonthSummary => _summaryForMonth(currentMonthKey);
   List<MonthlySummary> get orderedHistory =>
       [...history]..sort((a, b) => b.monthKey.compareTo(a.monthKey));
 
   String get statusLabel {
-    if (monthlyBudget == 0) return 'Configura tu perfil para empezar.';
-    if (spentThisMonth >= monthlyBudget) return 'No te preocupes, siempre se puede mejorar <3.';
-    if (spentThisMonth >= monthlyBudget * 0.8) return 'ten cuidado, ya casi llegas al limite!';
+    if (monthlyBudget == 0) {
+      return 'Configura tu perfil para empezar.';
+    }
+    if (spentThisMonth >= monthlyBudget) {
+      return 'No te preocupes, siempre se puede mejorar <3.';
+    }
+    if (spentThisMonth >= monthlyBudget * 0.8) {
+      return 'ten cuidado, ya casi llegas al limite!';
+    }
     return 'Vas bien. Sigues dentro del plan.';
   }
 
   String get statusAction {
-    if (monthlyBudget == 0) return 'Tu presupuesto se calculara cuando completes el onboarding.';
-    if (spentThisMonth >= monthlyBudget) return 'No te preocupes, siempre se puede mejorar <3.';
-    if (spentThisMonth >= monthlyBudget * 0.8) return 'ten cuidado, ya casi llegas al limite!';
+    if (monthlyBudget == 0) {
+      return 'Tu presupuesto se calculara cuando completes el onboarding.';
+    }
+    if (spentThisMonth >= monthlyBudget) {
+      return 'No te preocupes, siempre se puede mejorar <3.';
+    }
+    if (spentThisMonth >= monthlyBudget * 0.8) {
+      return 'ten cuidado, ya casi llegas al limite!';
+    }
     return dailyMotivation;
   }
 
   String get dailyMotivation {
     final today = DateTime.now();
-    final dayNumber = DateTime(today.year, today.month, today.day).millisecondsSinceEpoch ~/
-        Duration.millisecondsPerDay;
+    final dayNumber =
+        DateTime(today.year, today.month, today.day).millisecondsSinceEpoch ~/
+            Duration.millisecondsPerDay;
     return _dailyMotivations[dayNumber % _dailyMotivations.length];
   }
 
-  bool get shouldWarn => monthlyBudget > 0 && spentThisMonth >= monthlyBudget * 0.8;
+  bool get shouldWarn =>
+      monthlyBudget > 0 && spentThisMonth >= monthlyBudget * 0.8;
   bool get isOverBudget => monthlyBudget > 0 && spentThisMonth >= monthlyBudget;
 
   BankProfile bankByName(String name) {
@@ -288,13 +322,20 @@ class PresuCoController extends ChangeNotifier {
 
   MonthlySummary _summaryForMonth(String monthKey) {
     final monthExpenses = expensesForMonth(monthKey);
-    final existing = history.where((item) => item.monthKey == monthKey).toList();
+    final existing =
+        history.where((item) => item.monthKey == monthKey).toList();
     if (existing.isNotEmpty) {
       final current = existing.first;
       return current.copyWith(
-        income: monthKey == currentMonthKey ? profile.monthlyIncome : current.income,
-        savingsGoal: monthKey == currentMonthKey ? profile.monthlySavingsGoal : current.savingsGoal,
-        budget: monthKey == currentMonthKey ? profile.monthlyBudget : current.budget,
+        income: monthKey == currentMonthKey
+            ? profile.monthlyIncome
+            : current.income,
+        savingsGoal: monthKey == currentMonthKey
+            ? profile.monthlySavingsGoal
+            : current.savingsGoal,
+        budget: monthKey == currentMonthKey
+            ? profile.monthlyBudget
+            : current.budget,
         spent: monthExpenses.fold<double>(0, (sum, item) => sum + item.amount),
         expenseCount: monthExpenses.length,
         lastUpdated: DateTime.now(),
@@ -311,7 +352,9 @@ class PresuCoController extends ChangeNotifier {
   Future<void> _syncHistory() async {
     final grouped = <String, List<ExpenseEntry>>{};
     for (final expense in expenses) {
-      grouped.putIfAbsent(expense.monthKey, () => <ExpenseEntry>[]).add(expense);
+      grouped
+          .putIfAbsent(expense.monthKey, () => <ExpenseEntry>[])
+          .add(expense);
     }
 
     final existing = {for (final item in history) item.monthKey: item};
@@ -319,7 +362,8 @@ class PresuCoController extends ChangeNotifier {
 
     for (final entry in grouped.entries) {
       final monthExpenses = entry.value;
-      final spent = monthExpenses.fold<double>(0, (sum, item) => sum + item.amount);
+      final spent =
+          monthExpenses.fold<double>(0, (sum, item) => sum + item.amount);
       final current = existing[entry.key];
       final isCurrentMonth = entry.key == currentMonthKey;
       if (current == null) {
@@ -334,7 +378,9 @@ class PresuCoController extends ChangeNotifier {
         rebuilt.add(
           current.copyWith(
             income: isCurrentMonth ? profile.monthlyIncome : current.income,
-            savingsGoal: isCurrentMonth ? profile.monthlySavingsGoal : current.savingsGoal,
+            savingsGoal: isCurrentMonth
+                ? profile.monthlySavingsGoal
+                : current.savingsGoal,
             budget: isCurrentMonth ? profile.monthlyBudget : current.budget,
             spent: spent,
             expenseCount: monthExpenses.length,

@@ -4,22 +4,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models.dart';
 
-class PresuCoStore {
-  const PresuCoStore();
+class MisFinStore {
+  const MisFinStore();
 
-  static const String _profileKey = 'presuco.profile';
-  static const String _expensesKey = 'presuco.expenses';
-  static const String _historyKey = 'presuco.history';
+  static const String _profileKey = 'misfin.profile';
+  static const String _expensesKey = 'misfin.expenses';
+  static const String _historyKey = 'misfin.history';
 
-  Future<PresuCoProfile> loadProfile() async {
+  Future<MisFinProfile> loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_profileKey);
     if (raw == null || raw.isEmpty) {
-      return PresuCoProfile.defaults();
+      return MisFinProfile.defaults();
     }
 
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    return PresuCoProfile.fromJson(decoded);
+    return MisFinProfile.fromJson(decoded);
   }
 
   Future<List<ExpenseEntry>> loadExpenses() async {
@@ -48,7 +48,7 @@ class PresuCoStore {
         .toList();
   }
 
-  Future<void> saveProfile(PresuCoProfile profile) async {
+  Future<void> saveProfile(MisFinProfile profile) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_profileKey, jsonEncode(profile.toJson()));
   }

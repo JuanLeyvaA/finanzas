@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../controller.dart';
-import '../models.dart';
 import '../widgets.dart';
 
 class PreviewScreen extends StatelessWidget {
   const PreviewScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +19,11 @@ class PreviewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Preview de la app', style: Theme.of(context).textTheme.titleLarge),
+                Text('Preview de la app',
+                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
-                  'Esta vista resume como se siente PresuCo: elegante, simple y enfocada en automatizar lo maximo posible en iPhone.',
+                  'Esta vista resume como se siente MisFin: elegante, simple y enfocada en automatizar lo maximo posible en iPhone.',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
               ],
@@ -51,7 +51,9 @@ class PreviewScreen extends StatelessWidget {
               Expanded(
                 child: MetricCard(
                   title: 'Automatizacion',
-                  value: controller.profile.onboardingComplete ? 'Lista' : 'Pendiente',
+                  value: controller.profile.onboardingComplete
+                      ? 'Lista'
+                      : 'Pendiente',
                   subtitle: 'Estado',
                 ),
               ),
@@ -65,7 +67,9 @@ class PreviewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Lo que muestra la preview', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text('Lo que muestra la preview',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 SizedBox(height: 10),
                 Text('- Onboarding con look premium'),
                 Text('- Dashboard con barra de presupuesto'),

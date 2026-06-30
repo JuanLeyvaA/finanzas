@@ -482,7 +482,7 @@ Con tu OK empiezo a generar el proyecto en tu carpeta.
 
 
 
-En iPhone no se puede hacer una app que lea sola los SMS o las notificaciones de Nequi, Nu o Bancolombia en segundo plano. Apple no lo permite por privacidad. Pero sí se puede acercar mucho a “automático” con Atajos de iOS + App Intents + detección inteligente al abrir la app. Esa es la estrategia correcta para PresuCo solo en iPhone.
+En iPhone no se puede hacer una app que lea sola los SMS o las notificaciones de Nequi, Nu o Bancolombia en segundo plano. Apple no lo permite por privacidad. Pero sí se puede acercar mucho a “automático” con Atajos de iOS + App Intents + detección inteligente al abrir la app. Esa es la estrategia correcta para MisFin solo en iPhone.
 
 
 
@@ -520,7 +520,7 @@ Pegar / portapapeles al abrir la app
 
 Media
 
-Compartir texto → PresuCo
+Compartir texto → MisFin
 
 ✅ Sí
 
@@ -532,7 +532,7 @@ Botón manual efectivo
 
 Baja (respaldo)
 
-La clave: PresuCo no espía el celular; el usuario activa una automatización de Apple una sola vez y, a partir de ahí, cada compra puede registrarse sola.
+La clave: MisFin no espía el celular; el usuario activa una automatización de Apple una sola vez y, a partir de ahí, cada compra puede registrarse sola.
 
 
 
@@ -556,9 +556,9 @@ Atajo: notificación recibida
 
 Atajo: mensaje recibido
 
-Botón en PresuCo
+Botón en MisFin
 
-Atajo envía texto a PresuCo
+Atajo envía texto a MisFin
 
 Parser del banco elegido
 
@@ -570,11 +570,11 @@ Alerta naranja
 
 Alerta roja
 
-Los 3 niveles de automatización en PresuCo
+Los 3 niveles de automatización en MisFin
 
 Nivel 1 — Automático (objetivo principal): Atajos prearmados
 
-En el onboarding, después de elegir bancos, PresuCo muestra:
+En el onboarding, después de elegir bancos, MisFin muestra:
 
 
 
@@ -618,13 +618,13 @@ Flujo para el usuario (una sola vez, \~2 min por banco):
 
 
 
-Instala el Atajo que PresuCo le da
+Instala el Atajo que MisFin le da
 
 iOS pregunta: “¿Ejecutar sin preguntar?” → Sí
 
-Listo: cada compra → Atajo → PresuCo registra el gasto
+Listo: cada compra → Atajo → MisFin registra el gasto
 
-PresuCo recibe el texto vía App Intent / deep link (presuco://gasto?texto=...) y el parser extrae el monto.
+MisFin recibe el texto vía App Intent / deep link (misfin://gasto?texto=...) y el parser extrae el monto.
 
 
 
@@ -634,7 +634,7 @@ Si el Atajo no corrió o el usuario copió la notificación:
 
 
 
-Abre PresuCo
+Abre MisFin
 
 La app detecta texto de banco en el portapapeles
 
@@ -648,7 +648,7 @@ Nivel 3 — Respaldo: manual + compartir
 
 Botón “Gasto en efectivo”
 
-Compartir → PresuCo desde Mensajes, Mail o la app del banco
+Compartir → MisFin desde Mensajes, Mail o la app del banco
 
 Siempre hay forma de registrar, aunque falle la automatización.
 
@@ -676,9 +676,9 @@ Abre app → botón → monto → listo
 
 Atajo falló
 
-Copia notificación → abre PresuCo → confirma en 1 toque
+Copia notificación → abre MisFin → confirma en 1 toque
 
-Con los Atajos bien configurados, la mayoría de gastos con tarjeta no requieren abrir PresuCo manualmente.
+Con los Atajos bien configurados, la mayoría de gastos con tarjeta no requieren abrir MisFin manualmente.
 
 
 
@@ -698,7 +698,7 @@ Prueba — texto de ejemplo → “¡Funcionó! Registramos $32.000”
 
 Inicio — barra verde / naranja / roja
 
-El paso 5 es lo que diferencia PresuCo de una app manual más.
+El paso 5 es lo que diferencia MisFin de una app manual más.
 
 
 
@@ -732,7 +732,7 @@ App Intents (app\_intents o Swift nativo)
 
 Deep links
 
-presuco://registrar-gasto?texto=...
+misfin://registrar-gasto?texto=...
 
 Alertas
 
@@ -780,7 +780,7 @@ La experiencia ideal para el usuario:
 
 
 
-Compra → notificación del banco → PresuCo lo registra solo → alerta si se acerca al límite
+Compra → notificación del banco → MisFin lo registra solo → alerta si se acerca al límite
 
 
 

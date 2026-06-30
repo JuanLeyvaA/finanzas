@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,7 +12,7 @@ import '../widgets.dart';
 class ImportScreen extends StatefulWidget {
   const ImportScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   State<ImportScreen> createState() => _ImportScreenState();
@@ -18,6 +20,8 @@ class ImportScreen extends StatefulWidget {
 
 class _ImportScreenState extends State<ImportScreen> {
   final TextEditingController _textController = TextEditingController();
+  Timer? _autoImportTimer;
+  bool _autoImportInFlight = false;
 
   @override
   void initState() {
@@ -28,6 +32,7 @@ class _ImportScreenState extends State<ImportScreen> {
 
   @override
   void dispose() {
+    _autoImportTimer?.cancel();
     _textController.dispose();
     super.dispose();
   }
@@ -36,9 +41,10 @@ class _ImportScreenState extends State<ImportScreen> {
   Widget build(BuildContext context) {
     final draft = widget.controller.draft;
     final currency = widget.controller.profile.currency;
-    final automationUri = draft?.rawText == null || draft!.rawText.trim().isEmpty
-        ? null
-        : buildAutomationUri(baseUri: Uri.base, text: draft.rawText);
+    final automationUri =
+        draft?.rawText == null || draft!.rawText.trim().isEmpty
+            ? null
+            : buildAutomationUri(text: draft.rawText);
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
       children: [
@@ -46,7 +52,7 @@ class _ImportScreenState extends State<ImportScreen> {
           child: AnimalSectionBanner(
             title: 'Importar gasto',
             subtitle:
-                'Pega una notificacion, un correo o texto compartido y PresuCo intenta registrarlo casi solo.',
+                'MisFin recibe el movimiento, lo entiende y lo guarda automaticamente cuando todo coincide.',
             currency: currency,
             animals: const ['🐼', '🐱', '🐧', '🦁', '🐰', '🐸'],
           ),
@@ -58,10 +64,11 @@ class _ImportScreenState extends State<ImportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Pegar texto o notificacion', style: Theme.of(context).textTheme.titleLarge),
+                Text('Pegar texto o notificacion',
+                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
-                  'Pega aqui el mensaje del movimiento y la app intentara entender cuanto fue, de donde salio y como guardarlo mejor.',
+                  'Los movimientos claros se procesan solos. Si alguno falla, escribe aqui el valor y el banco, por ejemplo: 40000 Nequi.',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 12),
@@ -70,10 +77,10 @@ class _ImportScreenState extends State<ImportScreen> {
                   minLines: 6,
                   maxLines: 8,
                   decoration: const InputDecoration(
-                    hintText: 'Ejemplo: Bancolombia aprobó compra por \$45.000 en MERCADO...',
+                    hintText: 'Pega una notificacion o escribe: 40000 Nequi',
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: widget.controller.parseText,
+                  onChanged: _handleTextChanged,
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -87,19 +94,32 @@ class _ImportScreenState extends State<ImportScreen> {
                             ? null
                             : () async {
                                 if (draft!.hasCurrencyMismatch(currency)) {
-                                  final shouldContinue = await _confirmCurrencyMismatch(draft, currency);
+                                  final shouldContinue =
+                                      await _confirmCurrencyMismatch(
+                                          draft, currency);
                                   if (shouldContinue != true) {
                                     return;
                                   }
                                 }
+                                final alreadySaved = widget.controller
+                                    .hasExpenseWithRawText(draft.rawText);
                                 await widget.controller.importDraft();
+                                _textController.clear();
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Gasto guardado.')),
+                                    SnackBar(
+                                      content: Text(
+                                        alreadySaved
+                                            ? 'Ese gasto ya estaba guardado.'
+                                            : 'Gasto guardado.',
+                                      ),
+                                    ),
                                   );
                                 }
                               },
-                        child: Text(draft?.canAutoImport == true ? 'Guardar solo' : 'Registrar gasto'),
+                        child: Text(draft?.canAutoImport == true
+                            ? 'Guardar solo'
+                            : 'Registrar gasto'),
                       ),
                     ),
                     SizedBox(
@@ -132,26 +152,30 @@ class _ImportScreenState extends State<ImportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Como funciona la importacion', style: Theme.of(context).textTheme.titleLarge),
+                Text('Como funciona la importacion',
+                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
-                  'Solo necesitas traer el texto del movimiento. PresuCo intenta leerlo, entender cuanto fue, detectar el banco y dejarte el gasto casi listo para guardar.',
+                  'Los movimientos claros se registran solos. Solo veras una confirmacion cuando falte el valor, la divisa no coincida o el mensaje pueda significar otra cosa.',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 12),
                 const _AutomationChannel(
-                  title: '1. Pegas o compartes el texto',
-                  subtitle: 'Puede venir de una notificacion, un SMS, un correo o algo que copies manualmente.',
+                  title: '1. El movimiento llega a MisFin',
+                  subtitle:
+                      'Puede venir de una automatizacion, un enlace, un mensaje compartido o el portapapeles.',
                 ),
                 const SizedBox(height: 10),
                 const _AutomationChannel(
                   title: '2. La app lo interpreta',
-                  subtitle: 'PresuCo intenta reconocer el valor, el banco y el tipo de compra automaticamente.',
+                  subtitle:
+                      'MisFin intenta reconocer el valor, el banco y el tipo de compra automaticamente.',
                 ),
                 const SizedBox(height: 10),
                 const _AutomationChannel(
-                  title: '3. Confirmas y guardas',
-                  subtitle: 'Si algo falta o no coincide, lo corriges rapido y despues lo registras.',
+                  title: '3. Se guarda automaticamente',
+                  subtitle:
+                      'Si todo coincide no haces nada mas. Solo las excepciones quedan listas para revisar.',
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -160,10 +184,13 @@ class _ImportScreenState extends State<ImportScreen> {
                     onPressed: automationUri == null
                         ? null
                         : () async {
-                            await Clipboard.setData(ClipboardData(text: automationUri.toString()));
+                            await Clipboard.setData(
+                                ClipboardData(text: automationUri.toString()));
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Enlace de captura copiado.')),
+                                const SnackBar(
+                                    content:
+                                        Text('Enlace de captura copiado.')),
                               );
                             }
                           },
@@ -174,8 +201,8 @@ class _ImportScreenState extends State<ImportScreen> {
                 const SizedBox(height: 8),
                 Text(
                   automationUri == null
-                      ? 'Cuando pegues un texto aqui, tambien podras copiar un enlace listo para usar en Atajos y acelerar este proceso.'
-                      : 'Ese enlace puede usarse como accion final en un Atajo para abrir PresuCo con el texto ya listo para importar.',
+                      ? 'Al recibir un movimiento, MisFin tambien crea un enlace compatible con automatizaciones.'
+                      : 'Este enlace abre MisFin, interpreta el movimiento y lo registra si es seguro hacerlo.',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
               ],
@@ -199,11 +226,13 @@ class _ImportScreenState extends State<ImportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text('Atajos sugeridos', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text('Formas rapidas de traer gastos',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 SizedBox(height: 10),
-                Text('- Notificacion recibida -> enviar texto a PresuCo'),
-                Text('- Compartir texto -> PresuCo'),
-                Text('- Abrir app -> pegar desde portapapeles'),
+                Text('- Copia una notificacion y pegala aqui'),
+                Text('- Envia texto con la accion Registrar gasto de Atajos'),
+                Text('- Abre MisFin despues de copiar un movimiento'),
               ],
             ),
           ),
@@ -226,25 +255,66 @@ class _ImportScreenState extends State<ImportScreen> {
     setState(() {
       _textController.text = text;
     });
-    final imported = await widget.controller.ingestText(text, autoImport: true);
-    final mismatch = widget.controller.draft?.hasCurrencyMismatch(widget.controller.profile.currency) ?? false;
+    _handleTextChanged(text);
+  }
 
+  void _handleTextChanged(String text) {
+    widget.controller.parseText(text);
     if (mounted) {
+      setState(() {});
+    }
+    _autoImportTimer?.cancel();
+
+    final normalized = text.trim();
+    if (normalized.isEmpty) {
+      return;
+    }
+
+    final draft = widget.controller.draft;
+    if (draft == null ||
+        draft.amount == null ||
+        draft.hasCurrencyMismatch(widget.controller.profile.currency) ||
+        !draft.canAutoImport) {
+      return;
+    }
+
+    _autoImportTimer = Timer(const Duration(milliseconds: 450), () async {
+      if (!mounted || _autoImportInFlight) {
+        return;
+      }
+      if (_textController.text.trim() != normalized) {
+        return;
+      }
+
+      _autoImportInFlight = true;
+      bool imported = false;
+      final alreadySaved = widget.controller.hasExpenseWithRawText(normalized);
+      try {
+        imported =
+            await widget.controller.ingestText(normalized, autoImport: true);
+      } finally {
+        _autoImportInFlight = false;
+      }
+
+      if (!mounted || !imported) {
+        return;
+      }
+
+      _textController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            imported
-                ? 'Texto detectado y guardado automaticamente.'
-                : mismatch
-                    ? 'La notificacion parece venir en otra divisa. Revisa antes de guardar.'
-                    : 'Texto detectado desde el portapapeles.',
+            alreadySaved
+                ? 'Ese gasto ya estaba guardado.'
+                : 'Gasto guardado automaticamente.',
           ),
         ),
       );
-    }
+    });
   }
 
-  Future<bool?> _confirmCurrencyMismatch(ParsedTransactionDraft draft, AppCurrency activeCurrency) {
+  Future<bool?> _confirmCurrencyMismatch(
+      ParsedTransactionDraft draft, AppCurrency activeCurrency) {
     return showDialog<bool>(
       context: context,
       builder: (context) {
@@ -295,7 +365,8 @@ class _AutomationChannel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 2),
                 Text(subtitle, style: TextStyle(color: Colors.grey.shade700)),
               ],
@@ -323,7 +394,8 @@ class _DraftPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Detectamos esto', style: Theme.of(context).textTheme.titleLarge),
+          Text('Detectamos esto',
+              style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 10),
           if (mismatch)
             Container(
@@ -340,15 +412,20 @@ class _DraftPreview extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ),
-          _Row(label: 'Estado', value: draft.recognized ? 'Reconocido' : 'Revisar'),
+          _Row(
+              label: 'Estado',
+              value: draft.recognized ? 'Reconocido' : 'Revisar'),
           _Row(label: 'Confianza', value: draft.confidenceLabel),
-          _Row(label: 'Divisa detectada', value: draft.detectedCurrency?.label ?? 'No detectada'),
+          _Row(
+              label: 'Divisa detectada',
+              value: draft.detectedCurrency?.label ?? 'No detectada'),
           _Row(label: 'Banco', value: draft.bank ?? 'No identificado'),
           _Row(
             label: 'Monto',
             value: draft.amount == null
                 ? 'No detectado'
-                : formatMoney(draft.amount!, draft.detectedCurrency ?? activeCurrency),
+                : formatMoney(
+                    draft.amount!, draft.detectedCurrency ?? activeCurrency),
           ),
           _Row(label: 'Categoria', value: draft.category),
           _Row(label: 'Nota', value: draft.note),
@@ -360,7 +437,9 @@ class _DraftPreview extends StatelessWidget {
               minHeight: 10,
               backgroundColor: const Color(0xFFE9E2D5),
               valueColor: AlwaysStoppedAnimation<Color>(
-                draft.canAutoImport ? const Color(0xFF1F8F6A) : const Color(0xFFF28C28),
+                draft.canAutoImport
+                    ? const Color(0xFF1F8F6A)
+                    : const Color(0xFFF28C28),
               ),
             ),
           ),

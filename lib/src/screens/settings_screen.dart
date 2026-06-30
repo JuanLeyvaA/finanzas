@@ -7,7 +7,7 @@ import '../widgets.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.controller});
 
-  final PresuCoController controller;
+  final MisFinController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,8 @@ class SettingsScreen extends StatelessWidget {
         FadeSlideIn(
           child: AnimalSectionBanner(
             title: 'Ajustes',
-            subtitle: 'Control local, respaldo y edicion rapida del entorno, la divisa y tus datos.',
+            subtitle:
+                'Control local, respaldo y edicion rapida del entorno, la divisa y tus datos.',
             currency: currency,
             animals: const ['🐼', '🦄', '🐯', '🐨', '🐰', '🐤'],
           ),
@@ -37,11 +38,22 @@ class SettingsScreen extends StatelessWidget {
           child: GlassCard(
             child: Column(
               children: [
-                _SettingRow(label: 'Frecuencia', value: controller.profile.frequency.label),
+                _SettingRow(
+                    label: 'Frecuencia',
+                    value: controller.profile.frequency.label),
                 _SettingRow(label: 'Divisa', value: currency.label),
-                _SettingRow(label: 'Ingreso por pago', value: formatMoney(controller.profile.incomePerPeriod, currency)),
-                _SettingRow(label: 'Ahorro mensual', value: formatMoney(controller.profile.monthlySavingsGoal, currency)),
-                _SettingRow(label: 'Presupuesto', value: formatMoney(controller.profile.monthlyBudget, currency)),
+                _SettingRow(
+                    label: 'Ingreso por periodo',
+                    value: formatMoney(
+                        controller.profile.incomePerPeriod, currency)),
+                _SettingRow(
+                    label: 'Ahorro mensual',
+                    value: formatMoney(
+                        controller.profile.monthlySavingsGoal, currency)),
+                _SettingRow(
+                    label: 'Presupuesto',
+                    value: formatMoney(
+                        controller.profile.monthlyBudget, currency)),
               ],
             ),
           ),
